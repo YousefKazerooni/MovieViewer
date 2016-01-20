@@ -8,6 +8,7 @@
 
 import UIKit
 import AFNetworking
+import MBProgressHUD
 
 class MoviesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
@@ -37,12 +38,18 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
             delegateQueue:NSOperationQueue.mainQueue()
         )
         
+        //line to make the hub appear
+        MBProgressHUD.showHUDAddedTo(self.view, animated: true)
+        
         let task : NSURLSessionDataTask = session.dataTaskWithRequest(request,
             completionHandler: { (dataOrNil, response, error) in
                 if let data = dataOrNil {
                     if let responseDictionary = try! NSJSONSerialization.JSONObjectWithData(
                         data, options:[]) as? NSDictionary {
                             NSLog("response: \(responseDictionary)")
+                            
+                            //line to make the hub disappear
+                            MBProgressHUD.hideHUDForView(self.view, animated: true)
                         
                             //Store the retrieved array of dictionaries into the instance variable, to be used later for setting the contents of the cells.
                             self.movies = responseDictionary["results"] as! [NSDictionary]
@@ -52,6 +59,8 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
                 }
         });
         task.resume()
+        
+        
         
         
         
