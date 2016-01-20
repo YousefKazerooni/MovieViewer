@@ -26,9 +26,39 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         tableView.dataSource = self
         tableView.delegate = self
         
+    
         
         //Api network request code
 
+        apiNetworkRequest()
+        
+        
+        // Initialize a UIRefreshControl
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: "refreshControlAction:", forControlEvents: UIControlEvents.ValueChanged)
+        tableView.insertSubview(refreshControl, atIndex: 0)
+        
+        
+    }
+        
+        
+        
+
+  
+
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+    
+    
+    
+    
+    
+    
+    
+    //***********1  Api network request code
+    func apiNetworkRequest () {
         let apiKey = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
         let url = NSURL(string:"https://api.themoviedb.org/3/movie/now_playing?api_key=\(apiKey)")
         let request = NSURLRequest(URL: url!)
@@ -37,6 +67,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
             delegate:nil,
             delegateQueue:NSOperationQueue.mainQueue()
         )
+        
         
         //line to make the hub appear
         MBProgressHUD.showHUDAddedTo(self.view, animated: true)
@@ -50,7 +81,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
                             
                             //line to make the hub disappear
                             MBProgressHUD.hideHUDForView(self.view, animated: true)
-                        
+                            
                             //Store the retrieved array of dictionaries into the instance variable, to be used later for setting the contents of the cells.
                             self.movies = responseDictionary["results"] as! [NSDictionary]
                             self.tableView.reloadData()
@@ -59,29 +90,29 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
                 }
         });
         task.resume()
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    
+    
+    
+    
+    
+    //**********2 RefreshControl
+    func refreshControlAction(refreshControl: UIRefreshControl) {
+        
+        
+        // Make network request to fetch latest data
+        apiNetworkRequest()
+        // Do the following when the network request comes back successfully:
+        // Update tableView data source
+        self.tableView.reloadData()
+        refreshControl.endRefreshing()
     }
     
     
-    //1st Method of dataSource Protocole = defines the number of rows
+    
+    //*********1st Method of dataSource Protocole = defines the number of rows
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         if let movies = movies {
@@ -95,7 +126,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         
     }
     
-    //2nd Method of dataSource Protocoles = allows refining the cells
+    //***********2nd Method of dataSource Protocoles = allows refining the cells
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
         //In the end, by casting it down to MovieCell, we make it a subclass and can access titleLabel and overviewLabel inside.
