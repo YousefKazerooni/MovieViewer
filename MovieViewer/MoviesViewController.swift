@@ -13,9 +13,11 @@ import MBProgressHUD
 class MoviesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var searchBar: UITableView!
     
     //Declare movies to later store the already parsed into a dictionary JSON, whose information would be otherwise stuck in its methond.
     var movies: [NSDictionary]?
+    var filteredData: [NSDictionary]!
     
     
     override func viewDidLoad() {
@@ -23,8 +25,10 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         
         
         //after adding the dataSource and delegate protocols, we need to initialize our cells as the MoviesViewController to be the dataSource and delegate.
+        
         tableView.dataSource = self
         tableView.delegate = self
+        searchBar.delegate = self
         
     
         
@@ -84,6 +88,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
                             
                             //Store the retrieved array of dictionaries into the instance variable, to be used later for setting the contents of the cells.
                             self.movies = responseDictionary["results"] as! [NSDictionary]
+                            self.filteredData = responseDictionary["results"] as? [NSDictionary]
                             self.tableView.reloadData()
                             
                     }
@@ -111,16 +116,27 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     
+    //********* Search Bar Fucntion
+    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
+        filteredData = searchText.isEmpty ? movies : movies!.filter({(movies: NSDictionary) -> Bool in
+            return (movies["title"] as! String).rangeOfString(searchText, options: .CaseInsensitiveSearch) != nil
+            
+        })
+        
+        tableView.reloadData()
+    }
+    
     
     //*********1st Method of dataSource Protocole = defines the number of rows
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        if let movies = movies {
-            return movies.count
-        }
-        else {
-            return 0
-        }
+//        if let movies = movies {
+//            return movies.count
+//        }
+//        else {
+//            return 0
+//        }
+        return filteredData?.count ?? 0
     
         
         
@@ -133,7 +149,8 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         let cell = tableView.dequeueReusableCellWithIdentifier("MovieCell", forIndexPath: indexPath) as! MovieCell
         
         //On top we declared movies as an optional and now we must unwrap but if nil the program will crash
-        let movie = movies![indexPath.row]
+        //let movie = movies![indexPath.row]
+        let movie = filteredData![indexPath.row]
         
         //without force casting as a string, title would be "AnyObject" and can't be used as a Label text.
         let title = movie ["title"] as! String
@@ -156,6 +173,9 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         return cell
         
     }
+    
+  
+  
 
     /*
     // MARK: - Navigation
