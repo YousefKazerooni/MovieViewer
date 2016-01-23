@@ -10,10 +10,12 @@ import UIKit
 import AFNetworking
 import MBProgressHUD
 
-class MoviesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class MoviesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate {
 
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var searchBar: UITableView!
+    
+    @IBOutlet weak var searchBar: UISearchBar!
+    
     
     //Declare movies to later store the already parsed into a dictionary JSON, whose information would be otherwise stuck in its methond.
     var movies: [NSDictionary]?
@@ -126,6 +128,22 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         tableView.reloadData()
     }
     
+    //************ showing the cancel button upon editing in the search bar
+    func searchBarTextDidBeginEditing(searchBar: UISearchBar) {
+        self.searchBar.showsCancelButton = true
+    }
+    
+    //*********** activating the cancel button
+    func searchBarCancelButtonClicked(searchBar: UISearchBar) {
+        searchBar.showsCancelButton = false
+        searchBar.text = ""
+        searchBar.resignFirstResponder()
+        
+        //After removing cancel we must reload the view
+        self.filteredData = self.movies
+        self.tableView.reloadData()
+        
+    }
     
     //*********1st Method of dataSource Protocole = defines the number of rows
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
