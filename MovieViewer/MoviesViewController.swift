@@ -13,9 +13,8 @@ import MBProgressHUD
 class MoviesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate {
 
     @IBOutlet weak var tableView: UITableView!
-    
     @IBOutlet weak var searchBar: UISearchBar!
-    
+    @IBOutlet weak var networkErrorView: UIView!
     
     //Declare movies to later store the already parsed into a dictionary JSON, whose information would be otherwise stuck in its methond.
     var movies: [NSDictionary]?
@@ -43,6 +42,9 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: "refreshControlAction:", forControlEvents: UIControlEvents.ValueChanged)
         tableView.insertSubview(refreshControl, atIndex: 0)
+        
+        //The initial state of the Network Error view
+        toggleNetworkErrorView(false)
         
         
     }
@@ -95,6 +97,11 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
                             
                     }
                 }
+                
+                //Activates the intoggle of Network Error view if encounters nil
+                if error != nil {
+                    self.toggleNetworkErrorView(true)
+                }
         });
         task.resume()
 
@@ -103,7 +110,19 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     
     
     
-    
+    //*********** Network Error
+    func toggleNetworkErrorView( visible: Bool) {
+        if visible {
+            networkErrorView.hidden = false
+            UIView.animateWithDuration(0.5, delay: 0.1, options: .CurveEaseOut, animations: {
+                self.view.bringSubviewToFront(self.networkErrorView)
+                self.tableView.frame.origin.y += self.searchBar.frame.height
+                }, completion: nil
+            )
+        } else {
+            networkErrorView.hidden = true
+        }
+    }
     
     //**********2 RefreshControl
     func refreshControlAction(refreshControl: UIRefreshControl) {
