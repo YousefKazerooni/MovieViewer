@@ -75,6 +75,9 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
+                    <navigationItem key="navigationItem" id="iXA-JW-erq">
+                        <barButtonItem key="rightBarButtonItem" id="5HC-28-abA"/>
+                    </navigationItem>
                     <connections>
                         <outlet property="networkErrorView" destination="ucV-V1-OIv" id="6Jf-Jp-I9g"/>
                         <outlet property="searchBar" destination="ceq-Hr-X7b" id="Mv7-Hs-6H3"/>
@@ -83,7 +86,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="202" y="272"/>
+            <point key="canvasLocation" x="1266" y="272"/>
         </scene>
     </scenes>
 </document>
