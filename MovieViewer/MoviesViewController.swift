@@ -196,13 +196,46 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         //creating the image Url
         let baseUrl = "http://image.tmdb.org/t/p/w500"
         let posterPath = movie ["poster_path"] as! String
-        
         let imageUrl = NSURL (string: baseUrl + posterPath)
+        
+        
+        //Making the images fading in upon loading the first time; i.e, not from the cache
+        let imageRequest = NSURLRequest(URL: NSURL(string: baseUrl + posterPath)!)
+        
+        
+        // Before we had the following code: cell.posterView.setImageWithURL(imageUrl!); now instead of just having (imageUrl) we have a whole statment
+        cell.posterView.setImageWithURLRequest(
+            imageRequest,
+            placeholderImage: nil,
+            success: { (imageRequest, imageResponse, image) -> Void in
+                
+                // imageResponse will be nil if the image is cached
+                if imageResponse != nil {
+                    print("Image was NOT cached, fade in image")
+                    cell.posterView.alpha = 0.0
+                    cell.posterView.image = image
+                    UIView.animateWithDuration(0.9, animations: { () -> Void in
+                        cell.posterView.alpha = 1.0
+                    })
+                } else {
+                    print("Image was cached so just update the image")
+                    cell.posterView.image = image
+                }
+            },
+            failure: { (imageRequest, imageResponse, error) -> Void in
+                // do something for the failure condition
+                //????????????????????????????????
+                if imageResponse == nil {
+                    self.toggleNetworkErrorView(true)
+                }
+            
+        })
+        
         
         
         cell.titelLabel.text = title
         cell.overviewLabel.text = overview
-        cell.posterView.setImageWithURL(imageUrl!)
+        
         
     
         
