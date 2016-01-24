@@ -196,7 +196,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         //creating the image Url
         let baseUrl = "http://image.tmdb.org/t/p/w500"
         let posterPath = movie ["poster_path"] as! String
-        let imageUrl = NSURL (string: baseUrl + posterPath)
+        //let imageUrl = NSURL (string: baseUrl + posterPath)
         
         
         //Making the images fading in upon loading the first time; i.e, not from the cache
@@ -225,9 +225,9 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
             failure: { (imageRequest, imageResponse, error) -> Void in
                 // do something for the failure condition
                 //????????????????????????????????
-                if imageResponse == nil {
-                    self.toggleNetworkErrorView(true)
-                }
+//                if imageResponse == nil {
+//                    self.toggleNetworkErrorView(true)
+//                }
             
         })
         
