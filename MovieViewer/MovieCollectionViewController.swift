@@ -8,7 +8,7 @@
 
 import UIKit
 
-class MovieCollectionViewController: UIViewController {
+class MovieCollectionViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
 
     @IBOutlet weak var collectionView: UICollectionView!
     
@@ -16,12 +16,16 @@ class MovieCollectionViewController: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        
+        collectionView.dataSource = self
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    //*********************
     
     let totalColors: Int = 100
     func colorForIndexPath(indexPath: NSIndexPath) -> UIColor {
@@ -31,6 +35,27 @@ class MovieCollectionViewController: UIViewController {
         
         var hueValue: CGFloat = CGFloat(indexPath.row) / CGFloat(totalColors)
         return UIColor(hue: hueValue, saturation: 1.0, brightness: 1.0, alpha: 1.0)
+    }
+    
+    
+    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return totalColors
+    }
+    
+    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCellWithReuseIdentifier("CollectionCell", forIndexPath: indexPath) as! CollectionCell
+        let cellColor = colorForIndexPath(indexPath)
+        cell.backgroundColor = cellColor
+        
+        if CGColorGetNumberOfComponents(cellColor.CGColor) == 4 {
+            let redComponent = CGColorGetComponents(cellColor.CGColor)[0] * 255
+            let greenComponent = CGColorGetComponents(cellColor.CGColor)[1] * 255
+            let blueComponent = CGColorGetComponents(cellColor.CGColor)[2] * 255
+            cell.colorLabel.text = String(format: "%.0f, %.0f, %.0f", redComponent, greenComponent, blueComponent)
+        }
+        
+        return cell
+        
     }
 
     /*
