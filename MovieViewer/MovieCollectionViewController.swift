@@ -131,7 +131,7 @@ class MovieCollectionViewController: UIViewController, UICollectionViewDataSourc
        
         
         cell.posterCollectionView.setImageWithURL(imageUrl!)
-        cell.titelCollectionLabel.text = movie ["title"] as! String
+        
         
         
         return cell
