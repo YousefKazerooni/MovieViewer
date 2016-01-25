@@ -9,12 +9,16 @@
 import UIKit
 
 
-class MovieCollectionViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+class MovieCollectionViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate  {
 
     @IBOutlet weak var collectionView: UICollectionView!
     
+    
     //Variable to store the API array of dictionaries
     var movies: [NSDictionary]?
+    
+    //Contains the result from the search bar
+    var filteredData: [NSDictionary]!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,6 +26,7 @@ class MovieCollectionViewController: UIViewController, UICollectionViewDataSourc
         
 
         collectionView.delegate = self
+        
         
         apiNetworkRequest()
         
@@ -52,8 +57,6 @@ class MovieCollectionViewController: UIViewController, UICollectionViewDataSourc
         )
         
         
-        //line to make the hub appear
-        //MBProgressHUD.showHUDAddedTo(self.view, animated: true)
         
         let task : NSURLSessionDataTask = session.dataTaskWithRequest(request,
             completionHandler: { (dataOrNil, response, error) in
@@ -62,8 +65,7 @@ class MovieCollectionViewController: UIViewController, UICollectionViewDataSourc
                         data, options:[]) as? NSDictionary {
                             NSLog("response: \(responseDictionary)")
                             
-                            //line to make the hub disappear
-                            //MBProgressHUD.hideHUDForView(self.view, animated: true)
+                        
                             
                             //Store the retrieved array of dictionaries into the instance variable movies created as a global, to be used later for setting the contents of the cells in another function.
                             self.movies = responseDictionary["results"] as! [NSDictionary]
@@ -97,7 +99,12 @@ class MovieCollectionViewController: UIViewController, UICollectionViewDataSourc
     
     
     
-    //Number of cells
+    
+    
+    
+    
+    
+    //***************Number of cells
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
                 if let movies = movies {
@@ -109,7 +116,7 @@ class MovieCollectionViewController: UIViewController, UICollectionViewDataSourc
     }
     
     
-    // Populating the cells
+    //***************Populating the cells
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("CollectionCell", forIndexPath: indexPath) as! CollectionCell
         
