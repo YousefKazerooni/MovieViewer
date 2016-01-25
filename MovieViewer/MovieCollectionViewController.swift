@@ -8,16 +8,19 @@
 
 import UIKit
 
+
 class MovieCollectionViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
 
     @IBOutlet weak var collectionView: UICollectionView!
     
+    //Variable to store the API array of dictionaries
+    var movies: [NSDictionary]?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
-        
-        collectionView.dataSource = self
+        collectionView.delegate = self
+        apiNetworkRequest()
     }
 
     override func didReceiveMemoryWarning() {
@@ -25,34 +28,82 @@ class MovieCollectionViewController: UIViewController, UICollectionViewDataSourc
         // Dispose of any resources that can be recreated.
     }
     
-    //*********************
     
-    let totalColors: Int = 100
-    func colorForIndexPath(indexPath: NSIndexPath) -> UIColor {
-        if indexPath.row >= totalColors {
-            return UIColor.blackColor()	// return black if we get an unexpected row index
-        }
+    
+    
+    //***********1  Api network request code
+    func apiNetworkRequest () {
+        let apiKey = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
+        let url = NSURL(string:"https://api.themoviedb.org/3/movie/now_playing?api_key=\(apiKey)")
+        let request = NSURLRequest(URL: url!)
+        let session = NSURLSession(
+            configuration: NSURLSessionConfiguration.defaultSessionConfiguration(),
+            delegate:nil,
+            delegateQueue:NSOperationQueue.mainQueue()
+        )
         
-        var hueValue: CGFloat = CGFloat(indexPath.row) / CGFloat(totalColors)
-        return UIColor(hue: hueValue, saturation: 1.0, brightness: 1.0, alpha: 1.0)
+        
+        //line to make the hub appear
+        //MBProgressHUD.showHUDAddedTo(self.view, animated: true)
+        
+        let task : NSURLSessionDataTask = session.dataTaskWithRequest(request,
+            completionHandler: { (dataOrNil, response, error) in
+                if let data = dataOrNil {
+                    if let responseDictionary = try! NSJSONSerialization.JSONObjectWithData(
+                        data, options:[]) as? NSDictionary {
+                            NSLog("response: \(responseDictionary)")
+                            
+                            //line to make the hub disappear
+                            //MBProgressHUD.hideHUDForView(self.view, animated: true)
+                            
+                            //Store the retrieved array of dictionaries into the instance variable movies created as a global, to be used later for setting the contents of the cells in another function.
+                            self.movies = responseDictionary["results"] as! [NSDictionary]
+                            
+                            
+                            self.collectionView.dataSource = self
+                            self.collectionView.reloadData()
+                            
+                    }
+                }
+                
+
+        });
+        task.resume()
+        
     }
     
     
+    
+    
+    //Number of cells
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return totalColors
+        
+                if let movies = movies {
+                    return movies.count
+                }
+                else {
+                    return 0
+                }
     }
     
+    
+    // Populating the cells
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("CollectionCell", forIndexPath: indexPath) as! CollectionCell
-        let cellColor = colorForIndexPath(indexPath)
-        cell.backgroundColor = cellColor
         
-        if CGColorGetNumberOfComponents(cellColor.CGColor) == 4 {
-            let redComponent = CGColorGetComponents(cellColor.CGColor)[0] * 255
-            let greenComponent = CGColorGetComponents(cellColor.CGColor)[1] * 255
-            let blueComponent = CGColorGetComponents(cellColor.CGColor)[2] * 255
-            cell.colorLabel.text = String(format: "%.0f, %.0f, %.0f", redComponent, greenComponent, blueComponent)
-        }
+        //Parsing the array of dictionaries into its dictionaries (elements)
+        let movie = movies![indexPath.row]
+        
+        //creating the image Url
+        let baseUrl = "http://image.tmdb.org/t/p/w500"
+        let posterPath = movie ["poster_path"] as! String
+        let imageUrl = NSURL (string: baseUrl + posterPath)
+        
+       
+        
+        cell.posterCollectionView.setImageWithURL(imageUrl!)
+        cell.titelCollectionLabel.text = movie ["title"] as! String
+        
         
         return cell
         

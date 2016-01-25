@@ -18,6 +18,8 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     
     //Declare movies to later store the already parsed into a dictionary JSON, whose information would be otherwise stuck in its methond.
     var movies: [NSDictionary]?
+    
+    //for the search bar
     var filteredData: [NSDictionary]!
     
     

@@ -10,5 +10,7 @@ import UIKit
 
 class CollectionCell: UICollectionViewCell {
     
-    @IBOutlet weak var colorLabel: UILabel!
+    @IBOutlet weak var posterCollectionView: UIImageView!
+    
+    @IBOutlet weak var titelCollectionLabel: UILabel!
 }
