@@ -18,9 +18,18 @@ class MovieCollectionViewController: UIViewController, UICollectionViewDataSourc
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        
 
         collectionView.delegate = self
+        
         apiNetworkRequest()
+        
+        // Initialize a UIRefreshControl
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: "refreshControlAction:", forControlEvents: UIControlEvents.ValueChanged)
+        collectionView.insertSubview(refreshControl, atIndex: 0)
+        
     }
 
     override func didReceiveMemoryWarning() {
@@ -31,7 +40,7 @@ class MovieCollectionViewController: UIViewController, UICollectionViewDataSourc
     
     
     
-    //***********1  Api network request code
+    //***********1  Api network request Function
     func apiNetworkRequest () {
         let apiKey = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
         let url = NSURL(string:"https://api.themoviedb.org/3/movie/now_playing?api_key=\(apiKey)")
@@ -70,6 +79,19 @@ class MovieCollectionViewController: UIViewController, UICollectionViewDataSourc
         });
         task.resume()
         
+    }
+    
+    
+    //**********2 RefreshControl
+    func refreshControlAction(refreshControl: UIRefreshControl) {
+        
+        
+        // Make network request to fetch latest data
+        apiNetworkRequest()
+        // Do the following when the network request comes back successfully:
+        // Update tableView data source
+        self.collectionView.reloadData()
+        refreshControl.endRefreshing()
     }
     
     
