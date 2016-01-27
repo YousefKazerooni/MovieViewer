@@ -14,8 +14,53 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
 
+
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
+        
+        window = UIWindow (frame: UIScreen.mainScreen().bounds)
+        
+        //Create a variable that allows access to the storyboard
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        
+        //Using the storyboard, create a variable that allows access to the UINavigationController embedded in the storyboard
+        //Through Navigation controller's stack, we have access to all the ViewControllers that use push segue
+        let nowPlayingNavigationController = storyboard.instantiateViewControllerWithIdentifier("MoviesNavigationController") as! UINavigationController
+        
+        //Using the NavigationController, we can access the viewController; and then its property endpoint
+        let nowPlayingViewController = nowPlayingNavigationController.topViewController as! MoviesViewController
+        nowPlayingViewController.endpoint = "now_playing"
+        //for customization always use the first viewcontroller that is hooked; in this case navigationController
+        nowPlayingNavigationController.tabBarItem.title = "Now Playing"
+        nowPlayingNavigationController.tabBarItem.image = UIImage(named: "nowPlaying")
+        
+        
+        
+        
+        let topRatedNavigationController = storyboard.instantiateViewControllerWithIdentifier("MoviesNavigationController") as! UINavigationController
+        let topRatedViewController = topRatedNavigationController.topViewController as! MoviesViewController
+        topRatedViewController.endpoint = "top_rated"
+        topRatedNavigationController.tabBarItem.title = "Top Rated"
+        topRatedNavigationController.tabBarItem.image = UIImage(named: "topRated")
+        
+        
+        
+        
+        //Creating a tab bar
+        //note: using () at the end to initialize the UItabBarController
+        let tabBarController = UITabBarController ()
+        
+        
+        //Setting which tab has which viewController using an array
+        //note: Must reference the Navigation controller, because that's where the story of the viewController starts
+        tabBarController.viewControllers = [nowPlayingNavigationController, topRatedNavigationController]
+        
+        
+        
+        //set the initial viewController, call root view controller
+        window?.rootViewController = tabBarController
+        window?.makeKeyAndVisible()
+        
         return true
     }
 

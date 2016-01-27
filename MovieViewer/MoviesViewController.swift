@@ -19,6 +19,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     //Declare movies to later store the already parsed into a dictionary JSON, whose information would be otherwise stuck in its methond.
     var movies: [NSDictionary]?
     var filteredData: [NSDictionary]!
+    var endpoint : String!
     
     
     override func viewDidLoad() {
@@ -68,7 +69,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     //***********1  Api network request code
     func apiNetworkRequest () {
         let apiKey = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
-        let url = NSURL(string:"https://api.themoviedb.org/3/movie/now_playing?api_key=\(apiKey)")
+        let url = NSURL(string:"https://api.themoviedb.org/3/movie/\(endpoint)?api_key=\(apiKey)")
         let request = NSURLRequest(URL: url!)
         let session = NSURLSession(
             configuration: NSURLSessionConfiguration.defaultSessionConfiguration(),
