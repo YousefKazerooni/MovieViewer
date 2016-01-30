@@ -183,6 +183,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     //***********2nd Method of dataSource Protocoles = allows refining the cells
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
+        
         //In the end, by casting it down to MovieCell, we make it a subclass and can access titleLabel and overviewLabel inside.
         let cell = tableView.dequeueReusableCellWithIdentifier("MovieCell", forIndexPath: indexPath) as! MovieCell
         
@@ -194,50 +195,108 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         let title = movie ["title"] as! String
         let overview = movie ["overview"] as! String
         
-        //creating the image Url
-        let baseUrl = "http://image.tmdb.org/t/p/w500"
-        let posterPath = movie ["poster_path"] as! String
-        //let imageUrl = NSURL (string: baseUrl + posterPath)
-        
-        
-        //Making the images fading in upon loading the first time; i.e, not from the cache
-        let imageRequest = NSURLRequest(URL: NSURL(string: baseUrl + posterPath)!)
-        
-        
-        // Before we had the following code: cell.posterView.setImageWithURL(imageUrl!); now instead of just having (imageUrl) we have a whole statment
-        cell.posterView.setImageWithURLRequest(
-            imageRequest,
-            placeholderImage: nil,
-            success: { (imageRequest, imageResponse, image) -> Void in
-                
-                // imageResponse will be nil if the image is cached
-                if imageResponse != nil {
-                    print("Image was NOT cached, fade in image")
-                    cell.posterView.alpha = 0.0
-                    cell.posterView.image = image
-                    UIView.animateWithDuration(0.9, animations: { () -> Void in
-                        cell.posterView.alpha = 1.0
-                    })
-                } else {
-                    print("Image was cached so just update the image")
-                    cell.posterView.image = image
-                }
-            },
-            failure: { (imageRequest, imageResponse, error) -> Void in
-                // do something for the failure condition
-                //????????????????????????????????
-//                if imageResponse == nil {
-//                    self.toggleNetworkErrorView(true)
-//                }
-            
-        })
-        
-        
-        
         cell.titelLabel.text = title
         cell.overviewLabel.text = overview
         
         
+        // storing the Url for different resolutions
+        let smallImageUrl = "https://image.tmdb.org/t/p/w45"
+        let largeImageUrl = "https://image.tmdb.org/t/p/original"
+        let posterPath = movie ["poster_path"] as! String
+    
+    
+        
+        
+        //NSURLRequest as well as NSURL are classes that define types, and now we are 
+        //using constructs to create new instances of these types having the
+        //Url that we want.
+        let smallImageRequest = NSURLRequest(URL: NSURL(string: smallImageUrl + posterPath)!)
+        let largeImageRequest = NSURLRequest(URL: NSURL(string: largeImageUrl + posterPath)!)
+        
+        
+        //Setting the low resolution and high resolution, plus fading when not from cashe
+        cell.posterView.setImageWithURLRequest(
+            smallImageRequest,
+            placeholderImage: nil,
+            success: { (smallImageRequest, smallImageResponse, smallImage) -> Void in
+                
+                // smallImageResponse will be nil if the smallImage is already available
+                // in cache (might want to do something smarter in that case).
+                cell.posterView.alpha = 0.0
+                cell.posterView.image = smallImage;
+                
+                UIView.animateWithDuration(0.3, animations: { () -> Void in
+                    
+                    cell.posterView.alpha = 1.0
+                    
+                    }, completion: { (sucess) -> Void in
+                        
+                        // The AFNetworking ImageView Category only allows one request to be sent at a time
+                        // per ImageView. This code must be in the completion block.
+                        cell.posterView.setImageWithURLRequest(
+                            largeImageRequest,
+                            placeholderImage: smallImage,
+                            success: { (largeImageRequest, largeImageResponse, largeImage) -> Void in
+                                
+                                cell.posterView.image = largeImage;
+                                
+                            },
+                            failure: { (request, response, error) -> Void in
+                                // do something for the failure condition of the large image request
+                                // possibly setting the ImageView's image to a default image
+                        })
+                })
+            },
+            failure: { (request, response, error) -> Void in
+                // do something for the failure condition
+                // possibly try to get the large image
+        })
+        
+//----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
+//        //Making the images fading in upon loading the first time; i.e, not from the cache
+//        let imageRequest = NSURLRequest(URL: NSURL(string: baseUrl + posterPath)!)
+        
+//        creating the image Url
+//        let baseUrl = "http://image.tmdb.org/t/p/w500"
+//        let posterPath = movie ["poster_path"] as! String
+//        let imageUrl = NSURL (string: baseUrl + posterPath)
+        
+        
+//        // Before we had the following code: cell.posterView.setImageWithURL(imageUrl!); now instead of just having (imageUrl) we have a whole statment
+//        cell.posterView.setImageWithURLRequest(
+//            imageRequest,
+//            placeholderImage: nil,
+//            success: { (imageRequest, imageResponse, image) -> Void in
+//                
+//                // imageResponse will be nil if the image is cached
+//                if imageResponse != nil {
+//                    print("Image was NOT cached, fade in image")
+//                    cell.posterView.alpha = 0.0
+//                    cell.posterView.image = image
+//                    UIView.animateWithDuration(0.9, animations: { () -> Void in
+//                        cell.posterView.alpha = 1.0
+//                    })
+//                } else {
+//                    print("Image was cached so just update the image")
+//                    cell.posterView.image = image
+//                }
+//            },
+//            failure: { (imageRequest, imageResponse, error) -> Void in
+//                // do something for the failure condition
+//                
+//            
+//        })
+        
+//----------------------------------------------------------------------------
+//----------------------------------------------------------------------------
+        
+        
+        
+        //Changing cell color when it is selected
+        let backgroundView = UIView()
+        backgroundView.backgroundColor = UIColor.redColor()
+        cell.selectedBackgroundView = backgroundView
     
         
         print ("row \(indexPath.row)")
