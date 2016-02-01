@@ -22,6 +22,7 @@ class DetailViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+       
         
         
         //Setting the content size for the scroll view so that it know how much to scroll up or down

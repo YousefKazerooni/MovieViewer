@@ -199,6 +199,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         cell.overviewLabel.text = overview
         
         
+        
         // storing the Url for different resolutions
         let smallImageUrl = "https://image.tmdb.org/t/p/w45"
         let largeImageUrl = "https://image.tmdb.org/t/p/original"
@@ -295,7 +296,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         
         //Changing cell color when it is selected
         let backgroundView = UIView()
-        backgroundView.backgroundColor = UIColor.redColor()
+        backgroundView.backgroundColor = UIColor.blackColor()
         cell.selectedBackgroundView = backgroundView
     
         
